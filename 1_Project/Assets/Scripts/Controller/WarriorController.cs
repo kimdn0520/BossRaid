@@ -6,8 +6,8 @@ using UnityEngine;
 public class WarriorController : BaseHero
 {
     public override HeroType HeroClass => HeroType.Warrior;
-    public override int Health { get; set; } = 100;         // 일단 그냥 박아둔다.
-    public override int Mana { get; set; } = 50;
+    public override int Hp { get; set; } = 100;         // 일단 그냥 박아둔다.
+    public override int Mp { get; set; } = 50;
     public override int Defense { get; set; } = 5;
     public override int Shield { get; set; } = 0;
     public override float MoveSpeed { get; set; } = 5.0f;
@@ -15,6 +15,11 @@ public class WarriorController : BaseHero
     protected override void Awake()
     {
         base.Awake();
+    }
+
+    public override void OnNetworkSpawn()
+    {
+
     }
 
     public override void InputMove()

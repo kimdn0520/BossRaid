@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 public enum HeroType
 {
@@ -12,12 +13,12 @@ public enum HeroType
     Rogue
 }
 
-public abstract class BaseHero : MonoBehaviour
+public abstract class BaseHero : NetworkBehaviour
 {
     // abstract
     public abstract HeroType HeroClass { get; }
-    public abstract int Health { get; set; }
-    public abstract int Mana { get; set; }
+    public abstract int Hp { get; set; }
+    public abstract int Mp { get; set; }
     public abstract int Defense { get; set; }
     public abstract int Shield { get; set; }
     public abstract float MoveSpeed { get; set; }
