@@ -31,14 +31,14 @@ public abstract class BaseHero : NetworkBehaviour
 
     // non-abstract
     public StateMachine stateMachine;
-    public Vector2 MoveDirection { get; private set; }      // ÀÌµ¿ ¹æÇâ
-    public Vector3 mousePosition;                           // ¸¶¿ì½º À§Ä¡
-    public Vector2 attackDirection { get; private set; }    // °ø°Ý ¹æÇâ
+    public Vector2 MoveDirection { get; private set; }      // ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
+    public Vector3 mousePosition;                           // ï¿½ï¿½ï¿½ì½º ï¿½ï¿½Ä¡
+    public Vector2 attackDirection { get; private set; }    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private SpriteRenderer spriteRenderer;
 
-    // ¸ÞÀÎ Ä«¸Þ¶ó
+    // ï¿½ï¿½ï¿½ï¿½ Ä«ï¿½Þ¶ï¿½
     private Camera mainCamera;
 
     protected virtual void Awake()
@@ -52,19 +52,15 @@ public abstract class BaseHero : NetworkBehaviour
 
     protected virtual void FixedUpdate()
     {
-        // »óÅÂ¸Ó½Å¿¡¼­ ¹°¸® ¿¬»ê Ã³¸®
         stateMachine.FixedUpdate();
     }
 
     protected virtual void Update()
     {
-        // »óÅÂ¸Ó½Å ¾÷µ¥ÀÌÆ®
         stateMachine.Update();
 
-        // Direction °è»ê
         UpdateDirection();
 
-        // ½ºÇÁ¶óÀÌÆ® ¹æÇâ °»½Å
         UpdateSpriteDirection();
     }
 
@@ -82,11 +78,11 @@ public abstract class BaseHero : NetworkBehaviour
 
         if (directionX > 0)
         {
-            spriteRenderer.flipX = false; // ¿À¸¥ÂÊ
+            spriteRenderer.flipX = false; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         }
         else if (directionX < 0)
         {
-            spriteRenderer.flipX = true;  // ¿ÞÂÊ
+            spriteRenderer.flipX = true;  // ï¿½ï¿½ï¿½ï¿½
         }
     }
 
@@ -106,7 +102,7 @@ public abstract class BaseHero : NetworkBehaviour
     {
         if (rb != null)
         {
-            rb.velocity = MoveDirection * MoveSpeed;
+            rb.linearVelocity = MoveDirection * MoveSpeed;
         }
     }
 }
