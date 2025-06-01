@@ -13,12 +13,15 @@ public enum HeroType
     Rogue
 }
 
-public abstract class BaseHero : NetworkBehaviour
+public abstract class BaseHero : NetworkBehaviour, ICharacter
 {
+    // 네트워크 변수로 HP, MP, 이동 방향 등을 동기화
+    public NetworkVariable<float> Health { get; } = new NetworkVariable<float>(100f);
+    public NetworkVariable<float> Mana { get; } = new NetworkVariable<float>(50f);
+    public NetworkVariable<Vector2> MoveDirection { get; } = new NetworkVariable<Vector2>(Vector2.zero);
+
     // abstract
     public abstract HeroType HeroClass { get; }
-    public abstract int Hp { get; set; }
-    public abstract int Mp { get; set; }
     public abstract int Defense { get; set; }
     public abstract int Shield { get; set; }
     public abstract float MoveSpeed { get; set; }
@@ -31,32 +34,34 @@ public abstract class BaseHero : NetworkBehaviour
 
     // non-abstract
     public StateMachine stateMachine;
-    public Vector2 MoveDirection { get; private set; }      // �̵� ����
-    public Vector3 mousePosition;                           // ���콺 ��ġ
-    public Vector2 attackDirection { get; private set; }    // ���� ����
+    public Vector3 mousePosition;                        
+    public Vector2 attackDirection { get; private set; }
 
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private SpriteRenderer spriteRenderer;
 
-    // ���� ī�޶�
     private Camera mainCamera;
 
     protected virtual void Awake()
     {
         stateMachine = new StateMachine();
 
-        stateMachine.ChangeState(new State_Idle(this));
+        ChangeState(new State_Idle(this));
 
         mainCamera = Camera.main;
     }
 
     protected virtual void FixedUpdate()
     {
+        if (!IsServer) return;
+
         stateMachine.FixedUpdate();
     }
 
     protected virtual void Update()
     {
+        if (!IsOwner) return;
+
         stateMachine.Update();
 
         UpdateDirection();
@@ -78,31 +83,62 @@ public abstract class BaseHero : NetworkBehaviour
 
         if (directionX > 0)
         {
-            spriteRenderer.flipX = false; // ������
+            spriteRenderer.flipX = false;
         }
         else if (directionX < 0)
         {
-            spriteRenderer.flipX = true;  // ����
+            spriteRenderer.flipX = true;
         }
-    }
-
-    public virtual void InputMove()
-    {
-        MoveDirection = Vector2.zero;
-
-        if (Input.GetKey(KeyCode.W)) MoveDirection += Vector2.up;
-        if (Input.GetKey(KeyCode.S)) MoveDirection += Vector2.down;
-        if (Input.GetKey(KeyCode.A)) MoveDirection += Vector2.left;
-        if (Input.GetKey(KeyCode.D)) MoveDirection += Vector2.right;
-
-        MoveDirection = MoveDirection.normalized;
     }
 
     public virtual void MoveCharacter()
     {
         if (rb != null)
         {
-            rb.linearVelocity = MoveDirection * MoveSpeed;
+            rb.linearVelocity = MoveDirection.Value * MoveSpeed;
         }
     }
+
+    public void ChangeState(IState newState)
+    {
+        stateMachine.ChangeState(newState);
+    }
+
+    public virtual void Move(Vector2 direction)
+    {
+        if (IsOwner)
+        {
+            SubmitMoveServerRpc(direction);
+        }
+    }
+
+    public void Attack()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void UseSkill(int skillIndex)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void OnAttackAnimationEvent()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void OnSkillAnimationEvent(int skillIndex)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    #region Netcode RPC
+
+    [ServerRpc]
+    private void SubmitMoveServerRpc(Vector2 direction, ServerRpcParams rpcParams = default)
+    {
+        MoveDirection.Value = direction;
+    }
+
+#endregion
 }

@@ -9,34 +9,52 @@ public class State_Idle : IState
         this.hero = hero;
     }
 
-    public override void Enter()
+    public void Enter()
     {
         Debug.Log("Entered Idle State");
     }
 
-    public override void Execute()
+    public void Execute()
     {
-        hero.InputMove();
+        // 1. 이동 입력(WASD) 체크
+        Vector2 inputDir = Vector2.zero;
+        if (Input.GetKey(KeyCode.W)) inputDir += Vector2.up;
+        if (Input.GetKey(KeyCode.S)) inputDir += Vector2.down;
+        if (Input.GetKey(KeyCode.A)) inputDir += Vector2.left;
+        if (Input.GetKey(KeyCode.D)) inputDir += Vector2.right;
 
-        // 이동 입력이 있으면 이동 상태로 전환
-        if (hero.MoveDirection != Vector2.zero)
+        if (inputDir != Vector2.zero)
         {
+            inputDir.Normalize();
+
+            // 서버로 이동 요청
+            hero.Move(inputDir);
+
+            // 바로 Move 상태로 전환
             hero.stateMachine.ChangeState(new State_Move(hero));
+            return;
         }
 
-        // 공격 입력 처리
+        // 2. 공격 입력 처리
         if (Input.GetMouseButtonDown(0))
         {
             // hero.stateMachine.ChangeState(new State_Attack(hero));
         }
+
+        // 3) 스킬 입력 처리 (예: Q 키)
+        //if (Input.GetKeyDown(KeyCode.Q))
+        //{
+        //    hero.stateMachine.ChangeState(new State_Skill(hero, 0));
+        //    return;
+        //}
     }
 
-    public override void PhysicsExecute()
+    public void PhysicsExecute()
     {
         hero.MoveCharacter();
     }
 
-    public override void Exit()
+    public void Exit()
     {
         Debug.Log("Exited Idle State");
     }
