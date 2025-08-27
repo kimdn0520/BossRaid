@@ -6,7 +6,6 @@ public class HeroData : ScriptableObject
     [System.Serializable]
     public class Hero
     {
-        public HeroType heroType;
         public int hp;
         public int mp;
         public int defense;

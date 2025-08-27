@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class State_Idle : IState
 {
-    private BaseHero hero;
+    private readonly BaseHero hero;
 
     public State_Idle(BaseHero hero)
     {
@@ -11,51 +11,33 @@ public class State_Idle : IState
 
     public void Enter()
     {
-        Debug.Log("Entered Idle State");
-    }
+        Debug.Log("서버: Idle 상태 진입");
 
-    public void Execute()
-    {
-        // 1. 이동 입력(WASD) 체크
-        Vector2 inputDir = Vector2.zero;
-        if (Input.GetKey(KeyCode.W)) inputDir += Vector2.up;
-        if (Input.GetKey(KeyCode.S)) inputDir += Vector2.down;
-        if (Input.GetKey(KeyCode.A)) inputDir += Vector2.left;
-        if (Input.GetKey(KeyCode.D)) inputDir += Vector2.right;
-
-        if (inputDir != Vector2.zero)
-        {
-            inputDir.Normalize();
-
-            // 서버로 이동 요청
-            hero.Move(inputDir);
-
-            // 바로 Move 상태로 전환
-            hero.stateMachine.ChangeState(new State_Move(hero));
-            return;
-        }
-
-        // 2. 공격 입력 처리
-        if (Input.GetMouseButtonDown(0))
-        {
-            // hero.stateMachine.ChangeState(new State_Attack(hero));
-        }
-
-        // 3) 스킬 입력 처리 (예: Q 키)
-        //if (Input.GetKeyDown(KeyCode.Q))
-        //{
-        //    hero.stateMachine.ChangeState(new State_Skill(hero, 0));
-        //    return;
-        //}
+        hero.rb.linearVelocity = Vector2.zero;
     }
 
     public void PhysicsExecute()
     {
-        hero.MoveCharacter();
+        // 서버는 클라이언트가 보낸 최신 입력 데이터를 확인합니다.
+        var input = hero.LastReceivedInput;
+
+        // 1.공격 입력이 있었는가?
+        if (input.IsAttackPressed)
+        {
+            hero.stateMachine.ChangeState(new State_Attack(hero));
+            return;
+        }
+
+        // 2. 이동 입력이 있었는가?
+        if (input.MoveInput != Vector2.zero)
+        {
+            hero.stateMachine.ChangeState(new State_Move(hero));
+            return;
+        }
     }
 
     public void Exit()
     {
-        Debug.Log("Exited Idle State");
+        Debug.Log("서버: Idle 상태 탈출");
     }
 }

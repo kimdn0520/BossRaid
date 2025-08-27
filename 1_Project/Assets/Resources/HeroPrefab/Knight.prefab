@@ -72,6 +72,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6804426517605414981, guid: b763587ec0cb5b14aa4d09ddf47135bb, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -107,6 +111,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 744d12ba9cc2eeb4d99549ead8838b1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mousePosition: {x: 0, y: 0, z: 0}
   rb: {fileID: 1148322864229878822}
   spriteRenderer: {fileID: 1173518170281879204}

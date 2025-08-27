@@ -1,35 +1,16 @@
 public class StateMachine
 {
-    private IState currentState;
+    public IState CurrentState { get; private set; }
 
     public void ChangeState(IState newState)
     {
-        if (currentState != null)
-        {
-            currentState.Exit();
-        }
-
-        currentState = newState;
-
-        if (currentState != null)
-        {
-            currentState.Enter();
-        }
-    }
-
-    public void Update()
-    {
-        if (currentState != null)
-        {
-            currentState.Execute();
-        }
+        CurrentState?.Exit();
+        CurrentState = newState;
+        CurrentState.Enter();
     }
 
     public void FixedUpdate()
     {
-        if (currentState != null)
-        {
-            currentState.PhysicsExecute();
-        }
+        CurrentState?.PhysicsExecute();
     }
 }

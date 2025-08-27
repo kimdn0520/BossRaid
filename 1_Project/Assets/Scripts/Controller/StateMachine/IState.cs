@@ -10,11 +10,6 @@ public interface IState
     void Enter();
 
     /// <summary>
-    /// 해당 상태를 Update할 때 매 프레임에 호출
-    /// </summary>
-    void Execute();
-
-    /// <summary>
     /// 해당 상태를 FixedUpdate할 때 고정된 프레임에 호출
     /// </summary>
     void PhysicsExecute();

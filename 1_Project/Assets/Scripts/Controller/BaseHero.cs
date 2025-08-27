@@ -1,144 +1,102 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 
-public enum HeroType
-{
-    Warrior,
-    Priest,
-    Ranger,
-    Mage,
-    Rogue
-}
-
 public abstract class BaseHero : NetworkBehaviour, ICharacter
 {
-    // 네트워크 변수로 HP, MP, 이동 방향 등을 동기화
+    // Network Variables
     public NetworkVariable<float> Health { get; } = new NetworkVariable<float>(100f);
-    public NetworkVariable<float> Mana { get; } = new NetworkVariable<float>(50f);
-    public NetworkVariable<Vector2> MoveDirection { get; } = new NetworkVariable<Vector2>(Vector2.zero);
+    public NetworkVariable<bool> IsFlipped { get; } = new NetworkVariable<bool>(false);
 
-    // abstract
-    public abstract HeroType HeroClass { get; }
-    public abstract int Defense { get; set; }
-    public abstract int Shield { get; set; }
+    // Components & StateMachine
+    [SerializeField] public Rigidbody2D rb;
+    [SerializeField] protected SpriteRenderer spriteRenderer;
+
+    public StateMachine stateMachine;
+
+    // Server-side state
+    public InputPayload LastReceivedInput { get; private set; }
     public abstract float MoveSpeed { get; set; }
 
-    public abstract void Attack(Vector2 direction);
-    public abstract void UseSkill(int skillIndex, Vector2 direction);
-    public abstract void TakeDamage(int amount);
-    public abstract void AddShield(int amount);
-    public abstract UniTask DashAsync();
-
-    // non-abstract
-    public StateMachine stateMachine;
-    public Vector3 mousePosition;                        
-    public Vector2 attackDirection { get; private set; }
-
-    [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private SpriteRenderer spriteRenderer;
-
-    private Camera mainCamera;
 
     protected virtual void Awake()
     {
         stateMachine = new StateMachine();
-
-        ChangeState(new State_Idle(this));
-
-        mainCamera = Camera.main;
     }
 
+    public override void OnNetworkSpawn()
+    {
+        // 방향 동기화 콜백 등록
+        IsFlipped.OnValueChanged += (prev, next) => spriteRenderer.flipX = next;
+
+        // 서버에서만 상태머신 초기화
+        if (IsServer)
+        {
+            stateMachine.ChangeState(new State_Idle(this));
+        }
+    }
+
+    // 클라이언트의 Update: 입력 수집 및 서버 전송 역할만 수행
+    protected virtual void Update()
+    {
+        if (!IsOwner)
+        {
+            return;
+        }
+
+        // 1. 입력 데이터를 수집하여 Payload 생성
+        var payload = new InputPayload
+        {
+            MoveInput = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized,
+            LookDirection = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position).normalized,
+            IsAttackPressed = Input.GetMouseButtonDown(0),
+            IsSkillPressed = Input.GetKeyDown(KeyCode.Q)
+        };
+
+        // 2. 즉각적인 시각적 피드백 (스프라이트 방향)
+        spriteRenderer.flipX = payload.LookDirection.x < 0;
+
+        // 3. 수집한 입력 데이터를 서버로 전송
+        SubmitInputServerRpc(payload);
+    }
+
+    // 서버의 FixedUpdate: 상태 머신 실행 역할만 수행
     protected virtual void FixedUpdate()
     {
         if (!IsServer) return;
-
         stateMachine.FixedUpdate();
     }
 
-    protected virtual void Update()
+
+    // 실제 이동 로직 (서버의 상태 클래스가 호출)
+    public virtual void HandleMovement()
     {
-        if (!IsOwner) return;
-
-        stateMachine.Update();
-
-        UpdateDirection();
-
-        UpdateSpriteDirection();
+        rb.linearVelocity = LastReceivedInput.MoveInput * MoveSpeed;
     }
 
-    public virtual void UpdateDirection()
+    public virtual void HandleDirection()
     {
-        mousePosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 0f;
-
-        attackDirection = (mousePosition - transform.position).normalized;
+        IsFlipped.Value = LastReceivedInput.LookDirection.x < 0;
     }
 
-    public virtual void UpdateSpriteDirection()
-    {
-        float directionX = mousePosition.x - transform.position.x;
+    // 실제 공격 로직 (서버의 상태 클래스가 호출)
+    public abstract void PerformAttack();
 
-        if (directionX > 0)
-        {
-            spriteRenderer.flipX = false;
-        }
-        else if (directionX < 0)
-        {
-            spriteRenderer.flipX = true;
-        }
-    }
 
-    public virtual void MoveCharacter()
-    {
-        if (rb != null)
-        {
-            rb.linearVelocity = MoveDirection.Value * MoveSpeed;
-        }
-    }
-
-    public void ChangeState(IState newState)
-    {
-        stateMachine.ChangeState(newState);
-    }
-
-    public virtual void Move(Vector2 direction)
-    {
-        if (IsOwner)
-        {
-            SubmitMoveServerRpc(direction);
-        }
-    }
-
-    public void Attack()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void UseSkill(int skillIndex)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void OnAttackAnimationEvent()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void OnSkillAnimationEvent(int skillIndex)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    #region Netcode RPC
+    #region RPCs
 
     [ServerRpc]
-    private void SubmitMoveServerRpc(Vector2 direction, ServerRpcParams rpcParams = default)
+    private void SubmitInputServerRpc(InputPayload payload)
     {
-        MoveDirection.Value = direction;
+        // 서버는 클라이언트로부터 받은 최신 입력 데이터를 저장합니다.
+        LastReceivedInput = payload;
+
+        IsFlipped.Value = payload.LookDirection.x < 0;
     }
 
-#endregion
+    #endregion
+
+    // ICharacter 인터페이스 구현 (지금 구조에서는 사용되지 않지만, 외부 시스템 연동을 위해 남겨둘 수 있음)
+    public void Attack() { /* 의도적으로 비워둠. 입력은 Payload로 처리 */ }
+    public void UseSkill(int skillIndex) { /* 의도적으로 비워둠 */ }
 }
