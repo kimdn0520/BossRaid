@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
     {
         HandleInput();
 
-        CheckFlipByMouse();
+        CheckFlip();
 
         StateMachine.Update();
     }
@@ -65,17 +65,29 @@ public class PlayerController : MonoBehaviour
         //}
     }
 
-    private void CheckFlipByMouse()
+    //private void CheckFlipByMouse()
+    //{
+    //    // 마우스의 스크린 좌표를 게임 월드 좌표로 변환합니다.
+    //    Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+
+    //    // 마우스가 플레이어의 오른쪽에 있는지 왼쪽에 있는지 판단합니다.
+    //    bool isMouseOnRight = mouseWorldPosition.x > transform.position.x;
+
+    //    // 마우스가 오른쪽에 있는데 왼쪽을 보고 있을 경우
+    //    // 또는 마우스가 왼쪽에 있는데 오른쪽을 보고 있을 경우에 Flip을 호출합니다.
+    //    if ((isMouseOnRight && !IsFacingRight) || (!isMouseOnRight && IsFacingRight))
+    //    {
+    //        Flip();
+    //    }
+    //}
+
+    private void CheckFlip()
     {
-        // 마우스의 스크린 좌표를 게임 월드 좌표로 변환합니다.
-        Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+        if (Mathf.Abs(MoveInput.x) < 0.1f) return;
 
-        // 마우스가 플레이어의 오른쪽에 있는지 왼쪽에 있는지 판단합니다.
-        bool isMouseOnRight = mouseWorldPosition.x > transform.position.x;
+        bool shouldFlip = (MoveInput.x > 0 && !IsFacingRight) || (MoveInput.x < 0 && IsFacingRight);
 
-        // 마우스가 오른쪽에 있는데 왼쪽을 보고 있을 경우
-        // 또는 마우스가 왼쪽에 있는데 오른쪽을 보고 있을 경우에 Flip을 호출합니다.
-        if ((isMouseOnRight && !IsFacingRight) || (!isMouseOnRight && IsFacingRight))
+        if (shouldFlip)
         {
             Flip();
         }
