@@ -400,10 +400,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3232080905502693763}
   - component: {fileID: 5021840468713907192}
-  - component: {fileID: 8058409690171592977}
+  - component: {fileID: 1013201152860240703}
   m_Layer: 0
   m_Name: Stairs Layer Trigger
-  m_TagString: Untagged
+  m_TagString: SLayer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -466,7 +466,7 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
---- !u!114 &8058409690171592977
+--- !u!114 &1013201152860240703
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -475,7 +475,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7979759184317477253}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ee4cd513ad9492442a3faf6af9d1d5b2, type: 3}
+  m_Script: {fileID: 11500000, guid: 46a3325f39fc0684690c5d3e078bfeeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   direction: 1
