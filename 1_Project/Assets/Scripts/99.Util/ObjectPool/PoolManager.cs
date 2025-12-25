@@ -40,7 +40,7 @@ public class PoolManager : SingletonMonoBehaviour<PoolManager>
         GameObject containerMaster = new GameObject("PoolContainer_Master");
         DontDestroyOnLoad(containerMaster);
 
-        var poolSO = Resources.Load<PoolSO>("PoolSO");
+        var poolSO = Resources.Load<PoolSO>("ScriptableObject/PoolSO");
 
         if (poolSO != null)
         {
