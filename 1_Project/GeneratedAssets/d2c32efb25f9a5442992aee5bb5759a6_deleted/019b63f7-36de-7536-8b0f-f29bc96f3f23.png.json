@@ -1,0 +1,20 @@
+{
+    "asset": "d2c32efb25f9a5442992aee5bb5759a6",
+    "fileName": "019b63f7-36de-7536-8b0f-f29bc96f3f23.png",
+    "prompt": "Card Soldier texture 2D",
+    "negativePrompt": "",
+    "model": "409229d8-9653-42a8-b069-824d11ef6762",
+    "modelName": "8-bit Pixel",
+    "customSeed": -1,
+    "w3CTraceId": "0a514936f9786929bfcf1970fbbf0814",
+    "refinementMode": "Generation",
+    "pixelateTargetSize": 0,
+    "pixelateKeepImageSize": false,
+    "pixelatePixelBlockSize": 0,
+    "pixelateMode": 0,
+    "pixelateOutlineThickness": 0,
+    "doodles": {
+        "m_Items": []
+    },
+    "upscaleFactor": 0
+}

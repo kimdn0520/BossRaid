@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 498744b711b498a47bd278a43e5c0586, type: 3}
+  m_Name: HandRankData
+  m_EditorClassIdentifier: 
+  rankSettings:
+  - handType: 9
+    baseScore: 120
+    multiplier: 10
+  - handType: 8
+    baseScore: 100
+    multiplier: 8
+  - handType: 7
+    baseScore: 60
+    multiplier: 7
+  - handType: 6
+    baseScore: 40
+    multiplier: 4
+  - handType: 5
+    baseScore: 35
+    multiplier: 4
+  - handType: 4
+    baseScore: 30
+    multiplier: 4
+  - handType: 3
+    baseScore: 30
+    multiplier: 3
+  - handType: 2
+    baseScore: 20
+    multiplier: 2
+  - handType: 1
+    baseScore: 10
+    multiplier: 2
+  - handType: 0
+    baseScore: 0
+    multiplier: 1

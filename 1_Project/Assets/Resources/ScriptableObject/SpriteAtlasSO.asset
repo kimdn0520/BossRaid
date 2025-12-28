@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   atlases:
   - {fileID: 100100200, guid: 7bc76381e59332640b4c53aeb5c2778f, type: 3}
+  - {fileID: 100100200, guid: bdfb71772aa50f14ba6814006ab32a5c, type: 3}

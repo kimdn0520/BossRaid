@@ -10,6 +10,7 @@ using System.Linq;
 using System;
 using UnityEngine.UI;
 using DG.Tweening;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class BattleManager : MonoBehaviour
 {
@@ -196,8 +197,21 @@ public class BattleManager : MonoBehaviour
     private async UniTask EnemyTurnPhase()
     {
         Debug.Log("Enemy Turn...");
-        // 적 공격 로직
-        await UniTask.Delay(500);
+
+        //if (enemy != null && !enemy.IsDead())
+        //{
+        //    // 적의 공격을 기다림
+        //    // 콜백(람다)을 통해 실제로 때리는 시점에 데미지 처리를 수행
+        //    await enemy.Attack(() =>
+        //    {
+        //        // 실제 데미지 로직 (여기서 Player.TakeDamage 호출)
+        //        Debug.Log($"[BattleManager] Player hit by {enemy.EnemyName} for {enemy.BaseDamage} damage!");
+
+        //        // 추후 구현: player.TakeDamage(enemy.BaseDamage);
+        //    });
+        //}
+
+        await UniTask.Delay(500); // 턴 종료 전 잠시 대기
     }
 
     private async UniTask EndTurnPhase()

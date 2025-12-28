@@ -1,0 +1,11 @@
+{
+    "asset": "bcb8cd819bf4a124ba2feea555358b7a",
+    "fileName": "019b63f3-a1f8-7b64-9681-201d65728b60.pose.json",
+    "prompt": "앞으로 전진해서 창으로 찌르는 공격을 하는 애니메이션",
+    "negativePrompt": "",
+    "model": "9e46c009-67d8-4254-a3a0-32e3168247ee",
+    "modelName": "Text to Motion",
+    "customSeed": 2005144710,
+    "w3CTraceId": "d2e95f1f19843cda5ac2b7f2dd6a4666",
+    "isTrimmed": false
+}

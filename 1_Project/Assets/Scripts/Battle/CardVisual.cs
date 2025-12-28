@@ -9,11 +9,8 @@ using UnityEngine.EventSystems;
 public class CardVisual : MonoBehaviour
 {
     [Header("UI Elements")]
-    public Image cardBaseImage;
-    public Image suitIcon;
-    public TextMeshProUGUI rankText;
-    public GameObject selectionHighlight;
-
+    [SerializeField] private Image cardBaseImage;
+    [SerializeField] private Image highlightImage;
     [SerializeField] private Button _button;
 
     public CardData Data => _data;
@@ -52,11 +49,15 @@ public class CardVisual : MonoBehaviour
     {
         if (_data == null) return;
 
-        rankText.text = GetRankString(_data.CurrentRank);
-        //suitIcon.color = GetSuitColor(_data.CurrentSuit);
+        string spriteKey = GetSpriteKey(_data.CurrentSuit, _data.CurrentRank);
+        Sprite cardSprite = SpriteManager.Instance.Get(spriteKey);
 
-        if (selectionHighlight != null)
-            selectionHighlight.SetActive(_data.IsSelected);
+        if (cardSprite != null)
+        {
+            cardBaseImage.sprite = cardSprite;
+        }
+
+        UpdateHighlightState();
 
         float targetY = _data.IsSelected ? 20f : 0f;
 
@@ -64,22 +65,41 @@ public class CardVisual : MonoBehaviour
         transform.DOLocalMoveY(targetY, 0.2f);
     }
 
-    private string GetRankString(Rank rank)
+    private void UpdateHighlightState()
     {
-        switch (rank) 
-        { 
-            case Rank.Jack: 
-                return "J";
-            case Rank.Queen:
-                return "Q";
-            case Rank.King:
-                return "K"; 
-            case Rank.Ace: 
-                return "A";
-            default: 
-                return ((int)rank).ToString(); }
+        if (highlightImage == null) return;
+
+        if (_data.IsSelected)
+        {
+            highlightImage.gameObject.SetActive(true);
+        }
+        else
+        {
+            highlightImage.gameObject.SetActive(false);
+        }
     }
 
+    private string GetSpriteKey(Suit suit, Rank rank)
+    {
+        // 1. Suit를 소문자로 변환 (Club -> "club")
+        string suitStr = suit.ToString().ToLower();
+
+        // 2. Rank를 1~13 숫자로 변환
+        int rankNum = (int)rank;
+
+        // Rank Enum 값에 따라 매핑 (Ace=1, J=11, Q=12, K=13)
+        switch (rank)
+        {
+            case Rank.Ace: rankNum = 1; break;
+            case Rank.Jack: rankNum = 11; break;
+            case Rank.Queen: rankNum = 12; break;
+            case Rank.King: rankNum = 13; break;
+            default: rankNum = (int)rank; break; // 2~10은 숫자 그대로
+        }
+
+        // 최종 키 조합: "1_club", "13_diamond" 형식
+        return $"{rankNum}_{suitStr}";
+    }
     public void AnimateDraw(Vector3 startWorldPos, Vector3 targetLocalPos, int index)
     {
         // 1. 시작 위치 설정 (월드 좌표 기준 덱 위치)
